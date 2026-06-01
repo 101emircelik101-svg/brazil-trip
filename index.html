@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brasil — Into the Wild</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --emerald: #0a3d2e;
+    --jade: #1a5c40;
+    --leaf: #2d8653;
+    --lime: #5cb85c;
+    --gold: #c9952a;
+    --sand: #e8d5a3;
+    --cream: #f5efe0;
+    --mist: rgba(255,255,255,0.08);
+    --fog: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #060e09;
+    color: #f0ebe0;
+    overflow-x: hidden;
+  }
+
+  /* ─── CURSOR ─── */
+  body { cursor: none; }
+  #cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,149,42,0.5);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    background: #060e09;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 100%, #0d3d22 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 50%, #0a2e1c 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 50%, #071e12 0%, transparent 60%),
+      #050d07;
+    z-index: 0;
+  }
+
+  /* SVG forest layers */
+  .forest-layer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+    will-change: transform;
+  }
+
+  /* Fireflies */
+  .firefly {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: #c9e85c;
+    box-shadow: 0 0 6px 2px rgba(180,230,60,0.6);
+    animation: float-fly linear infinite;
+    z-index: 3;
+  }
+
+  @keyframes float-fly {
+    0%   { opacity: 0; transform: translate(0,0) scale(0.5); }
+    20%  { opacity: 1; }
+    80%  { opacity: 0.8; }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem;
+  }
+  .hero-eyebrow {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1.2s 0.4s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(5rem, 14vw, 13rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 1.4s 0.6s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--sand);
+    display: block;
+  }
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: rgba(232,213,163,0.7);
+    margin-top: 1.5rem;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 1.4s 1s forwards;
+  }
+  .scroll-cue {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1s 2s forwards;
+  }
+  .scroll-cue span {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(201,149,42,0.7);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.6; }
+    50% { transform: scaleY(1.3); opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  /* ─── AMAZON SECTION ─── */
+  #amazon {
+    background: #071a0e;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 8rem 2rem;
+  }
+  .amazon-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 100% 50% at 0% 50%, rgba(10,50,28,0.8) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 100% 30%, rgba(5,25,12,0.9) 0%, transparent 50%),
+      #071a0e;
+    z-index: 0;
+  }
+  .section-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.6;
+  }
+  .section-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    margin-bottom: 1.8rem;
+  }
+  .section-heading em {
+    font-style: italic;
+    color: var(--sand);
+  }
+  .section-body {
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.85;
+    color: rgba(240,235,224,0.65);
+    margin-bottom: 2rem;
+  }
+  .stat-row {
+    display: flex;
+    gap: 3rem;
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat strong {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 2.8rem;
+    display: block;
+    color: var(--sand);
+    line-height: 1;
+  }
+  .stat span {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(240,235,224,0.45);
+  }
+
+  /* Visual card placeholder */
+  .visual-card {
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+  }
+  .visual-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  /* ─── DESTINATIONS ─── */
+  #destinations {
+    background: #040d07;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 8rem 2rem;
+  }
+  .dest-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(15,55,30,0.6) 0%, transparent 60%),
+      #040d07;
+    z-index: 0;
+  }
+  .dest-header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 5rem;
+    max-width: 700px;
+  }
+  .dest-header .section-label {
+    justify-content: center;
+  }
+  .dest-header .section-label::before { display: none; }
+  .dest-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+  }
+  .dest-title em { font-style: italic; color: var(--sand); }
+
+  .cards-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    max-width: 1200px;
+    width: 100%;
+  }
+  .dest-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    cursor: none;
+  }
+  .dest-card-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .dest-card:hover .dest-card-bg { transform: scale(1.06); }
+  .dest-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+    z-index: 2;
+  }
+  .dest-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 1.8rem;
+    z-index: 3;
+    transform: translateY(10px);
+    transition: transform 0.5s ease;
+  }
+  .dest-card:hover .dest-card-content { transform: translateY(0); }
+  .dest-card-num {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .dest-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.8rem;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+  .dest-card-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.12em;
+    font-weight: 300;
+  }
+  .dest-card-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.6);
+    margin-top: 0.8rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+    opacity: 0;
+  }
+  .dest-card:hover .dest-card-desc {
+    max-height: 80px;
+    opacity: 1;
+  }
+
+  /* ─── EXPERIENCE SECTION ─── */
+  #experiences {
+    background: #050f07;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 8rem 2rem;
+  }
+  .exp-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 100%, rgba(12,42,22,0.7) 0%, transparent 65%),
+      #050f07;
+    z-index: 0;
+  }
+  .exp-list {
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    width: 100%;
+  }
+  .exp-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 2.5rem;
+    align-items: start;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.4s ease;
+    cursor: none;
+  }
+  .exp-item:hover { padding-left: 1rem; }
+  .exp-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: rgba(201,149,42,0.3);
+    line-height: 1;
+    transition: color 0.4s;
+  }
+  .exp-item:hover .exp-num { color: rgba(201,149,42,0.8); }
+  .exp-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.7rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+  .exp-item:hover .exp-info h3 { color: var(--sand); }
+  .exp-info p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgba(240,235,224,0.5);
+    font-weight: 300;
+    max-width: 550px;
+  }
+  .exp-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,149,42,0.3);
+    padding: 0.4rem 0.9rem;
+    border-radius: 30px;
+    white-space: nowrap;
+    align-self: center;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .exp-item:hover .exp-tag {
+    background: rgba(201,149,42,0.15);
+    border-color: rgba(201,149,42,0.6);
+  }
+
+  /* ─── SEASONS ─── */
+  #seasons {
+    background: #060e09;
+    min-height: 80vh;
+    flex-direction: column;
+    padding: 8rem 2rem;
+  }
+  .seasons-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,40,20,0.5) 0%, transparent 70%),
+      #060e09;
+    z-index: 0;
+  }
+  .seasons-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+  }
+  .months-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+  }
+  .month-pill {
+    padding: 0.6rem 0.3rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 3px;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(240,235,224,0.45);
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .month-pill.best {
+    border-color: rgba(201,149,42,0.5);
+    background: rgba(201,149,42,0.1);
+    color: var(--sand);
+  }
+  .month-pill.good {
+    border-color: rgba(45,134,83,0.4);
+    background: rgba(45,134,83,0.08);
+    color: rgba(150,210,150,0.9);
+  }
+
+  /* ─── CTA ─── */
+  #cta {
+    background: #040b06;
+    min-height: 70vh;
+    text-align: center;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 6rem 2rem;
+  }
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 50%, rgba(10,50,28,0.5) 0%, transparent 70%),
+      #040b06;
+    z-index: 0;
+  }
+  .cta-title {
+    position: relative;
+    z-index: 2;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 1;
+  }
+  .cta-title em { font-style: italic; color: var(--sand); }
+  .cta-sub {
+    position: relative;
+    z-index: 2;
+    font-size: 1rem;
+    color: rgba(240,235,224,0.5);
+    font-weight: 300;
+    max-width: 500px;
+    line-height: 1.7;
+  }
+  .cta-buttons {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    padding: 1rem 2.8rem;
+    background: var(--gold);
+    color: #0a0600;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--sand); transform: translateY(-2px); }
+  .btn-outline {
+    padding: 1rem 2.8rem;
+    background: transparent;
+    color: var(--sand);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: 1px solid rgba(232,213,163,0.35);
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.3s, background 0.3s, transform 0.2s;
+  }
+  .btn-outline:hover {
+    border-color: rgba(232,213,163,0.7);
+    background: rgba(232,213,163,0.07);
+    transform: translateY(-2px);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.8rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(4,11,6,0.92);
+    backdrop-filter: blur(20px);
+    padding: 1.2rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--sand);
+    text-decoration: none;
+  }
+  .nav-logo em { font-style: italic; color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(240,235,224,0.55);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--sand); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.15s; }
+  .reveal-delay-2 { transition-delay: 0.3s; }
+  .reveal-delay-3 { transition-delay: 0.45s; }
+
+  /* ─── DIVIDER ─── */
+  .gold-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 auto 3rem;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #030908;
+    padding: 3rem;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  footer p {
+    font-size: 0.72rem;
+    color: rgba(240,235,224,0.25);
+    letter-spacing: 0.2em;
+  }
+
+  /* ─── HORIZONTAL MARQUEE ─── */
+  .marquee-wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin: 5rem 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 4rem;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: rgba(232,213,163,0.25);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .marquee-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Ambient glow */
+  .ambient {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo"><em>Brasil</em></a>
+  <ul class="nav-links">
+    <li><a href="#amazon">Amazon</a></li>
+    <li><a href="#destinations">Destinations</a></li>
+    <li><a href="#experiences">Experiences</a></li>
+    <li><a href="#seasons">When to Go</a></li>
+    <li><a href="#cta">Plan</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Animated forest layers via SVG -->
+  <svg class="forest-layer" id="forest-back" style="opacity:0.5; bottom:-5px;" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d3520"/><stop offset="100%" stop-color="#060e09"/></linearGradient></defs>
+    <!-- Rolling treeline background -->
+    <path d="M0 300 Q80 200 160 260 Q240 180 320 240 Q400 160 480 220 Q560 140 640 200 Q720 120 800 180 Q880 100 960 160 Q1040 80 1120 140 Q1200 100 1280 160 Q1360 120 1440 180 L1440 420 L0 420 Z" fill="url(#gb)"/>
+    <path d="M0 340 Q60 300 120 320 Q200 270 280 310 Q360 260 440 300 Q520 240 600 280 Q680 220 760 260 Q840 200 920 240 Q1000 180 1080 220 Q1160 200 1240 240 Q1320 200 1400 240 Q1420 235 1440 250 L1440 420 L0 420 Z" fill="#0a2918" opacity="0.8"/>
+  </svg>
+
+  <svg class="forest-layer" id="forest-mid" style="opacity:0.7; bottom:-3px;" viewBox="0 0 1440 380" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a4d2e"/><stop offset="100%" stop-color="#071a0e"/></linearGradient></defs>
+    <!-- Mid-layer trees with canopy shapes -->
+    <path d="M0 300 L40 200 L80 280 L80 300Z M120 280 L165 160 L210 270 L210 300 L120 300Z M250 310 L290 190 L330 295 L330 310Z M370 285 L415 150 L460 275 L460 300 L370 300Z M500 295 L545 170 L590 285 L590 300 L500 300Z M640 270 L690 130 L740 260 L740 300 L640 300Z M780 285 L825 155 L870 275 L870 300 L780 300Z M920 275 L965 140 L1010 265 L1010 300 L920 300Z M1060 290 L1105 165 L1150 280 L1150 310 L1060 310Z M1200 280 L1245 150 L1290 270 L1290 300 L1200 300Z M1330 300 L1375 175 L1420 290 L1440 300Z" fill="url(#gm)"/>
+    <path d="M0 350 Q200 310 400 340 Q600 300 800 330 Q1000 290 1200 325 Q1350 310 1440 330 L1440 380 L0 380Z" fill="#0d3020" opacity="0.9"/>
+  </svg>
+
+  <svg class="forest-layer" id="forest-fore" style="bottom:-2px;" viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#133d20"/><stop offset="100%" stop-color="#060e09"/></linearGradient></defs>
+    <!-- Foreground silhouettes -->
+    <path d="M-10 260 L-10 180 Q0 100 30 150 Q50 60 80 130 Q100 40 130 110 Q150 30 180 100 Q200 20 240 90 Q260 10 300 80 Q320 0 360 70 Q385 -10 420 65 Q450 -5 490 60 Q520 5 560 70 Q585 0 620 65 Q650 0 690 70 Q720 10 760 80 Q785 -5 820 70 Q850 10 890 80 Q915 0 950 75 Q975 5 1010 70 Q1040 0 1080 70 Q1100 0 1140 65 Q1165 -10 1200 60 Q1225 0 1260 65 Q1285 -10 1320 60 Q1350 0 1390 70 L1440 80 L1440 260 Z" fill="url(#gf)"/>
+    <!-- Fern leaves foreground -->
+    <path d="M0 240 Q50 200 100 240 Q150 180 200 220 Q250 190 300 230" fill="none" stroke="#1a5c35" stroke-width="2" opacity="0.5"/>
+    <path d="M1200 250 Q1250 200 1300 245 Q1350 195 1400 240 Q1420 210 1440 235" fill="none" stroke="#1a5c35" stroke-width="2" opacity="0.5"/>
+  </svg>
+
+  <!-- Fireflies -->
+  <div id="fireflies"></div>
+
+  <!-- Ambient glows -->
+  <div class="ambient" style="width:600px;height:400px;background:radial-gradient(ellipse,rgba(20,100,50,0.15),transparent);top:20%;left:10%;"></div>
+  <div class="ambient" style="width:500px;height:350px;background:radial-gradient(ellipse,rgba(10,60,30,0.12),transparent);top:30%;right:5%;"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">A Journey Into the Heart of</p>
+    <h1 class="hero-title">
+      Brasil
+      <em>Selvagem</em>
+    </h1>
+    <p class="hero-subtitle">Where the rainforest breathes and the rivers run gold</p>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════ AMAZON ═══════════════ -->
+<section id="amazon">
+  <div class="amazon-bg"></div>
+  <div class="ambient" style="width:700px;height:500px;background:radial-gradient(ellipse,rgba(15,70,35,0.2),transparent);top:20%;left:-10%;"></div>
+
+  <div class="section-grid">
+    <div>
+      <p class="section-label reveal">The Amazon</p>
+      <h2 class="section-heading reveal reveal-delay-1">
+        The lungs of<br><em>our planet</em>
+      </h2>
+      <p class="section-body reveal reveal-delay-2">
+        Covering over 5.5 million square kilometres, the Amazon rainforest is home to 10% of all species on Earth. Its canopy stretches so vast it creates its own weather, feeds its own rivers, and whispers in frequencies older than language itself.
+      </p>
+      <p class="section-body reveal reveal-delay-2">
+        To travel here is not to visit a place — it is to enter a living, breathing entity that will change you in ways you will only understand years later.
+      </p>
+      <div class="stat-row reveal reveal-delay-3">
+        <div class="stat">
+          <strong>5.5M</strong>
+          <span>km² of forest</span>
+        </div>
+        <div class="stat">
+          <strong>40,000+</strong>
+          <span>plant species</span>
+        </div>
+        <div class="stat">
+          <strong>3,000+</strong>
+          <span>fish species</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Illustrated Amazon scene card -->
+    <div class="visual-card reveal reveal-delay-2">
+      <div class="visual-card-inner">
+        <svg width="100%" height="100%" viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#060e09"/>
+              <stop offset="100%" stop-color="#0d3520"/>
+            </linearGradient>
+            <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0a2d1a"/>
+              <stop offset="100%" stop-color="#051508"/>
+            </linearGradient>
+            <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#e8d5a3" stop-opacity="0.9"/>
+              <stop offset="70%" stop-color="#c9952a" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+          </defs>
+          <!-- Sky -->
+          <rect width="420" height="520" fill="url(#sky)"/>
+          <!-- Moon glow -->
+          <circle cx="210" cy="120" r="80" fill="url(#moon)" opacity="0.3"/>
+          <circle cx="210" cy="120" r="28" fill="#e8d5a3" opacity="0.15"/>
+          <!-- Stars -->
+          <circle cx="80" cy="60" r="1.5" fill="#e8d5a3" opacity="0.6"/>
+          <circle cx="140" cy="40" r="1" fill="#e8d5a3" opacity="0.5"/>
+          <circle cx="300" cy="55" r="1.5" fill="#e8d5a3" opacity="0.7"/>
+          <circle cx="350" cy="80" r="1" fill="#e8d5a3" opacity="0.4"/>
+          <circle cx="60" cy="100" r="1" fill="#e8d5a3" opacity="0.5"/>
+          <circle cx="370" cy="40" r="1.5" fill="#e8d5a3" opacity="0.6"/>
+          <circle cx="180" cy="35" r="1" fill="#e8d5a3" opacity="0.5"/>
+          <!-- Canopy left -->
+          <path d="M-10 340 Q20 200 60 280 Q90 150 130 240 Q150 120 180 210 Q200 160 220 230 Q210 140 200 120 Q220 200 240 180 Q220 280 200 320 L-10 380Z" fill="#0d3520"/>
+          <path d="M-10 320 Q30 220 70 290 Q95 170 135 250 Q160 130 195 220 Q180 320 -10 360Z" fill="#133d26"/>
+          <!-- Canopy right -->
+          <path d="M430 320 Q400 180 360 260 Q330 140 290 220 Q270 100 250 190 Q260 260 280 300 Q310 240 330 280 L430 360Z" fill="#0d3520"/>
+          <path d="M430 330 Q405 200 365 270 Q335 150 295 225 Q280 290 430 370Z" fill="#133d26"/>
+          <!-- River -->
+          <path d="M0 380 Q105 360 210 370 Q315 380 420 360 L420 520 L0 520Z" fill="url(#water)"/>
+          <!-- River reflections -->
+          <path d="M30 400 Q80 390 130 400" stroke="rgba(200,220,200,0.12)" stroke-width="1.5" fill="none"/>
+          <path d="M290 395 Q340 385 390 398" stroke="rgba(200,220,200,0.1)" stroke-width="1" fill="none"/>
+          <path d="M100 420 Q160 410 210 418 Q270 408 330 418" stroke="rgba(200,220,200,0.08)" stroke-width="1.5" fill="none"/>
+          <!-- Moon reflection on water -->
+          <ellipse cx="210" cy="400" rx="40" ry="8" fill="#e8d5a3" opacity="0.06"/>
+          <!-- Canoe silhouette -->
+          <path d="M150 378 Q175 370 200 368 Q225 370 250 375 Q240 385 210 387 Q180 385 150 378Z" fill="#030a05"/>
+          <line x1="200" y1="368" x2="200" y2="350" stroke="#030a05" stroke-width="1.5"/>
+          <!-- Macaw silhouette -->
+          <path d="M330 180 Q340 170 355 175 Q350 185 340 182Z" fill="#1a5c35"/>
+          <!-- Ferns foreground -->
+          <path d="M-10 500 Q20 460 50 480 Q30 440 60 455 Q40 500 -10 510Z" fill="#0d3520"/>
+          <path d="M430 510 Q400 465 375 480 Q395 445 370 455 Q390 500 430 515Z" fill="#0d3520"/>
+          <!-- Fog wisps -->
+          <path d="M0 360 Q100 345 200 355 Q300 343 420 352" stroke="rgba(100,200,140,0.08)" stroke-width="20" fill="none"/>
+        </svg>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:2rem;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);z-index:2;">
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(232,213,163,0.7);">"In the jungle, the mighty jungle…"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════ DESTINATIONS ═══════════════ -->
+<section id="destinations">
+  <div class="dest-bg"></div>
+  <div class="dest-header reveal">
+    <p class="section-label">Destinations</p>
+    <h2 class="dest-title">Six <em>unmissable</em><br>wonders</h2>
+  </div>
+
+  <div class="cards-grid reveal">
+    <!-- Card 1: Amazon Rainforest -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#071a0c"/><stop offset="100%" stop-color="#0a2e18"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c1)"/>
+          <circle cx="150" cy="80" r="100" fill="rgba(20,90,40,0.15)"/>
+          <path d="M0 300 Q50 240 100 270 Q130 200 160 250 Q190 170 220 230 Q260 180 300 220 L300 400 L0 400Z" fill="#0d3020"/>
+          <path d="M0 330 Q40 290 90 310 Q120 260 155 290 Q190 250 230 275 Q265 240 300 260 L300 400 L0 400Z" fill="#133d26"/>
+          <path d="M0 360 Q60 330 120 350 Q160 315 200 340 Q240 310 300 330 L300 400 L0 400Z" fill="#1a4d30"/>
+          <!-- Sunbeam -->
+          <path d="M150 0 L130 180 L170 180Z" fill="rgba(232,213,163,0.04)"/>
+          <path d="M150 0 L100 200 L200 200Z" fill="rgba(232,213,163,0.02)"/>
+          <!-- Tropical flowers -->
+          <circle cx="70" cy="350" r="8" fill="rgba(180,60,60,0.4)"/>
+          <circle cx="240" cy="365" r="6" fill="rgba(200,100,40,0.35)"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">01</p>
+        <h3 class="dest-card-name">Amazônia</h3>
+        <p class="dest-card-sub">Amazonas State</p>
+        <p class="dest-card-desc">The world's greatest rainforest. Navigate its rivers by wooden boat as pink dolphins surface alongside.</p>
+      </div>
+    </div>
+
+    <!-- Card 2: Iguazu Falls -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#061520"/><stop offset="100%" stop-color="#0a2535"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c2)"/>
+          <!-- Waterfalls -->
+          <rect x="20" y="60" width="25" height="180" fill="rgba(100,180,200,0.18)" rx="2"/>
+          <rect x="60" y="40" width="30" height="200" fill="rgba(100,180,200,0.2)" rx="2"/>
+          <rect x="105" y="50" width="35" height="190" fill="rgba(100,180,200,0.22)" rx="2"/>
+          <rect x="155" y="30" width="28" height="210" fill="rgba(100,180,200,0.2)" rx="2"/>
+          <rect x="198" y="55" width="32" height="185" fill="rgba(100,180,200,0.18)" rx="2"/>
+          <rect x="245" y="45" width="25" height="195" fill="rgba(100,180,200,0.15)" rx="2"/>
+          <!-- Mist -->
+          <ellipse cx="150" cy="280" rx="160" ry="50" fill="rgba(150,200,220,0.12)"/>
+          <ellipse cx="150" cy="310" rx="130" ry="40" fill="rgba(150,200,220,0.08)"/>
+          <!-- Vegetation left -->
+          <path d="M0 200 Q30 150 60 190 Q40 120 80 160 Q50 230 0 250Z" fill="#0d3020"/>
+          <!-- Pool -->
+          <ellipse cx="150" cy="330" rx="140" ry="30" fill="rgba(80,140,160,0.25)"/>
+          <path d="M0 350 L0 400 L300 400 L300 340 Q200 360 150 355 Q80 368 0 350Z" fill="#061520"/>
+          <!-- Rainbow hint -->
+          <path d="M40 250 Q150 200 260 250" stroke="rgba(180,120,200,0.2)" stroke-width="8" fill="none"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">02</p>
+        <h3 class="dest-card-name">Cataratas do Iguaçu</h3>
+        <p class="dest-card-sub">Paraná State</p>
+        <p class="dest-card-desc">275 cascades wider than Niagara. Stand on the walkway as the mist rises around you like a living cloud.</p>
+      </div>
+    </div>
+
+    <!-- Card 3: Pantanal -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#100a03"/><stop offset="100%" stop-color="#1a1005"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c3)"/>
+          <!-- Sunset sky -->
+          <ellipse cx="150" cy="140" rx="200" ry="160" fill="rgba(180,90,20,0.12)"/>
+          <ellipse cx="150" cy="160" rx="160" ry="120" fill="rgba(200,120,30,0.1)"/>
+          <!-- Horizon water -->
+          <path d="M0 230 Q75 215 150 222 Q225 213 300 222 L300 400 L0 400Z" fill="#0d1f2d"/>
+          <!-- Reflections -->
+          <path d="M50 255 Q100 248 150 252 Q200 245 250 252" stroke="rgba(180,120,40,0.2)" stroke-width="2" fill="none"/>
+          <path d="M20 275 Q80 268 140 272 Q200 265 270 272" stroke="rgba(150,100,30,0.15)" stroke-width="1.5" fill="none"/>
+          <!-- Jaguar silhouette on bank -->
+          <path d="M120 228 Q130 218 145 222 Q155 215 165 220 Q175 225 172 228 Q165 230 155 226 Q145 232 135 230 Z" fill="#0a0503"/>
+          <!-- Tall grass -->
+          <path d="M0 235 L5 195 L10 235 M15 232 L20 185 L25 232 M30 235 L35 200 L40 235" stroke="#1a3012" stroke-width="2" fill="none"/>
+          <path d="M260 232 L265 190 L270 232 M275 235 L280 188 L285 235 M288 232 L293 195 L298 232" stroke="#1a3012" stroke-width="2" fill="none"/>
+          <!-- Birds at sunset -->
+          <path d="M180 80 Q188 74 196 80" stroke="rgba(200,130,40,0.5)" stroke-width="1.5" fill="none"/>
+          <path d="M210 65 Q218 59 226 65" stroke="rgba(200,130,40,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M230 90 Q237 84 244 90" stroke="rgba(200,130,40,0.45)" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">03</p>
+        <h3 class="dest-card-name">Pantanal</h3>
+        <p class="dest-card-sub">Mato Grosso</p>
+        <p class="dest-card-desc">Earth's largest tropical wetland. The best place on the planet to see jaguars in the wild.</p>
+      </div>
+    </div>
+
+    <!-- Card 4: Chapada Diamantina -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a0e1a"/><stop offset="100%" stop-color="#1a1430"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c4)"/>
+          <!-- Mesa plateaus -->
+          <path d="M0 250 L0 200 L60 200 L60 180 L120 180 L120 200 L150 200 L150 190 L200 190 L200 210 L240 210 L240 195 L300 195 L300 250Z" fill="#1a1530"/>
+          <path d="M0 280 L0 240 L80 240 L80 220 L160 220 L160 235 L220 235 L220 218 L300 218 L300 280Z" fill="#231d40"/>
+          <path d="M0 320 L0 270 L100 270 L100 255 L180 255 L180 270 L260 270 L260 258 L300 258 L300 320Z" fill="#1e1938"/>
+          <!-- Waterfall thin -->
+          <rect x="88" y="220" width="4" height="60" fill="rgba(120,180,220,0.35)"/>
+          <!-- Night sky stars -->
+          <circle cx="40" cy="60" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="100" cy="30" r="1" fill="white" opacity="0.5"/>
+          <circle cx="200" cy="50" r="1.5" fill="white" opacity="0.7"/>
+          <circle cx="260" cy="25" r="1" fill="white" opacity="0.5"/>
+          <circle cx="150" cy="20" r="2" fill="white" opacity="0.8"/>
+          <circle cx="320" cy="70" r="1" fill="white" opacity="0.4"/>
+          <!-- Milky way hint -->
+          <path d="M0 120 Q150 80 300 110" stroke="rgba(200,200,255,0.08)" stroke-width="25" fill="none"/>
+          <!-- Pool at bottom -->
+          <path d="M50 340 Q150 325 250 340 L280 400 L20 400Z" fill="rgba(40,60,100,0.6)"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">04</p>
+        <h3 class="dest-card-name">Chapada Diamantina</h3>
+        <p class="dest-card-sub">Bahia State</p>
+        <p class="dest-card-desc">Tabletop mountains, hidden grottos, and waterfalls that drop into crystal blue swimming holes.</p>
+      </div>
+    </div>
+
+    <!-- Card 5: Lençóis Maranhenses -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f1820"/><stop offset="100%" stop-color="#060d18"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c5)"/>
+          <!-- Sand dunes at dusk -->
+          <path d="M0 280 Q30 240 70 255 Q110 220 150 238 Q190 210 230 228 Q265 215 300 230 L300 400 L0 400Z" fill="#1a120a"/>
+          <path d="M0 310 Q40 275 90 290 Q130 258 170 272 Q210 245 250 260 Q275 248 300 258 L300 400 L0 400Z" fill="#231808"/>
+          <path d="M0 340 Q50 308 100 322 Q145 292 185 308 Q225 278 270 295 L300 285 L300 400 L0 400Z" fill="#2d2010"/>
+          <!-- Lagoon pools -->
+          <ellipse cx="80" cy="300" rx="35" ry="18" fill="rgba(40,100,150,0.5)"/>
+          <ellipse cx="200" cy="315" rx="28" ry="14" fill="rgba(40,100,150,0.45)"/>
+          <ellipse cx="260" cy="290" rx="20" ry="10" fill="rgba(40,100,150,0.4)"/>
+          <!-- Dusk sky -->
+          <rect x="0" y="0" width="300" height="200" fill="rgba(180,80,20,0.08)"/>
+          <ellipse cx="150" cy="140" rx="200" ry="100" fill="rgba(200,100,30,0.1)"/>
+          <!-- Reflection in pools -->
+          <ellipse cx="80" cy="303" rx="20" ry="5" fill="rgba(200,150,80,0.2)"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">05</p>
+        <h3 class="dest-card-name">Lençóis Maranhenses</h3>
+        <p class="dest-card-sub">Maranhão State</p>
+        <p class="dest-card-desc">Vast white sand dunes dotted with turquoise lagoons — a dreamscape unlike anywhere on Earth.</p>
+      </div>
+    </div>
+
+    <!-- Card 6: Rio de Janeiro -->
+    <div class="dest-card">
+      <div class="dest-card-bg">
+        <svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="c6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#050d18"/><stop offset="100%" stop-color="#0a1525"/></linearGradient></defs>
+          <rect width="300" height="400" fill="url(#c6)"/>
+          <!-- City lights at night -->
+          <rect x="0" y="260" width="300" height="140" fill="#050d18"/>
+          <!-- City skyline silhouette -->
+          <path d="M0 280 L0 260 L15 260 L15 245 L20 245 L20 252 L30 252 L30 238 L35 238 L35 252 L50 252 L50 240 L52 240 L52 235 L55 235 L55 240 L65 240 L65 255 L80 255 L80 248 L85 248 L85 242 L88 242 L88 248 L100 248 L100 255 L120 255 L120 245 L125 240 L130 245 L130 255 L145 255 L145 248 L148 248 L148 242 L152 242 L152 248 L165 248 L165 258 L180 258 L180 250 L185 244 L190 250 L190 258 L210 258 L210 250 L215 250 L215 244 L218 244 L218 250 L230 250 L230 260 L245 260 L245 252 L250 252 L250 258 L265 258 L265 265 L280 265 L280 258 L285 258 L285 265 L300 265 L300 280Z" fill="#0a1525"/>
+          <!-- City lights dots -->
+          <circle cx="45" cy="258" r="1" fill="rgba(255,200,100,0.5)"/>
+          <circle cx="60" cy="248" r="1" fill="rgba(255,200,100,0.4)"/>
+          <circle cx="95" cy="256" r="1" fill="rgba(255,200,100,0.5)"/>
+          <circle cx="155" cy="250" r="1" fill="rgba(255,200,100,0.45)"/>
+          <circle cx="220" cy="252" r="1" fill="rgba(255,200,100,0.5)"/>
+          <circle cx="270" cy="262" r="1" fill="rgba(255,200,100,0.4)"/>
+          <!-- Sugarloaf mountain -->
+          <path d="M200 220 Q220 180 240 215 Z" fill="#0d1a28"/>
+          <!-- Bay water -->
+          <path d="M0 300 Q150 288 300 295 L300 400 L0 400Z" fill="#071020"/>
+          <path d="M30 320 Q100 310 200 318 Q240 308 280 316" stroke="rgba(100,150,200,0.12)" stroke-width="1.5" fill="none"/>
+          <!-- Christ the Redeemer silhouette -->
+          <path d="M148 100 L152 100 L152 140 L148 140Z" fill="#0d1a28" opacity="0.7"/>
+          <path d="M130 120 L170 120 L170 123 L130 123Z" fill="#0d1a28" opacity="0.7"/>
+          <!-- Stars -->
+          <circle cx="50" cy="50" r="1" fill="white" opacity="0.5"/>
+          <circle cx="260" cy="35" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="120" cy="40" r="1" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="dest-card-overlay"></div>
+      <div class="dest-card-content">
+        <p class="dest-card-num">06</p>
+        <h3 class="dest-card-name">Rio de Janeiro</h3>
+        <p class="dest-card-sub">Rio State</p>
+        <p class="dest-card-desc">Cidade Maravilhosa — the marvellous city. Samba, Sugarloaf, and sunsets over the Guanabara Bay.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EXPERIENCES ═══════════════ -->
+<section id="experiences">
+  <div class="exp-bg"></div>
+
+  <div class="exp-list">
+    <div class="reveal" style="margin-bottom:4rem;">
+      <p class="section-label">Curated Experiences</p>
+      <h2 class="section-heading">Moments that<br><em>define a lifetime</em></h2>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-num">01</div>
+      <div class="exp-info">
+        <h3>Canopy Walk at Dawn</h3>
+        <p>Rise before the jungle does. Walk the suspension bridges high above the forest floor as the dawn chorus reaches its crescendo and mist rises through the canopy below your feet.</p>
+      </div>
+      <span class="exp-tag">Amazon</span>
+    </div>
+
+    <div class="exp-item reveal reveal-delay-1">
+      <div class="exp-num">02</div>
+      <div class="exp-info">
+        <h3>Pink Dolphin Encounter</h3>
+        <p>The boto — the Amazon river dolphin — is unlike anything else on Earth. Glide silently by canoe as these ethereal creatures surface in the black waters of the Rio Negro.</p>
+      </div>
+      <span class="exp-tag">Manaus</span>
+    </div>
+
+    <div class="exp-item reveal reveal-delay-2">
+      <div class="exp-num">03</div>
+      <div class="exp-info">
+        <h3>Jaguar Tracking, Pantanal</h3>
+        <p>With expert trackers, navigate the flooded plains by boat searching for the spotted ghost. The Pantanal offers the highest jaguar density on the planet — your odds have never been better.</p>
+      </div>
+      <span class="exp-tag">Wildlife</span>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-num">04</div>
+      <div class="exp-info">
+        <h3>Wild Swimming, Chapada Diamantina</h3>
+        <p>Descend into caverns where underground rivers have carved chambers of impossible blue. These secret grottos feel like the world's most private swimming pools.</p>
+      </div>
+      <span class="exp-tag">Adventure</span>
+    </div>
+
+    <div class="exp-item reveal reveal-delay-1">
+      <div class="exp-num">05</div>
+      <div class="exp-info">
+        <h3>Sunrise Capoeira on Copacabana</h3>
+        <p>Join a roda as the sun rises over the Atlantic. Watch masters of this Afro-Brazilian martial art-dance weave between each other with impossible grace. Then eat fresh coconut on the sand.</p>
+      </div>
+      <span class="exp-tag">Culture</span>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div style="background:#060e09;position:relative;z-index:1;">
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marquee-track">
+      <div class="marquee-item"><span>Amazônia</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Carnival</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Caipirinha</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Floresta Atlântica</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Boto Cor-de-Rosa</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Sugarloaf Mountain</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Iguaçu Falls</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Pantanal</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Saudade</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Amazônia</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Carnival</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Caipirinha</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Floresta Atlântica</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Boto Cor-de-Rosa</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Sugarloaf Mountain</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Iguaçu Falls</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Pantanal</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Saudade</span><div class="marquee-dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEASONS ═══════════════ -->
+<section id="seasons">
+  <div class="seasons-bg"></div>
+  <div class="seasons-inner">
+    <div>
+      <p class="section-label reveal">When to Go</p>
+      <h2 class="section-heading reveal reveal-delay-1">Plan your<br><em>perfect</em> trip</h2>
+      <p class="section-body reveal reveal-delay-2">
+        Brazil's sheer size means different regions peak at different times. Here's our guide to the ideal season for each experience.
+      </p>
+      <div class="reveal reveal-delay-2" style="margin-top:2rem;display:flex;flex-direction:column;gap:0.8rem;">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <div style="width:12px;height:12px;background:rgba(201,149,42,0.4);border:1px solid rgba(201,149,42,0.6);border-radius:2px;"></div>
+          <span style="font-size:0.8rem;color:rgba(240,235,224,0.6);">Peak season</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <div style="width:12px;height:12px;background:rgba(45,134,83,0.2);border:1px solid rgba(45,134,83,0.5);border-radius:2px;"></div>
+          <span style="font-size:0.8rem;color:rgba(240,235,224,0.6);">Good season</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <div style="width:12px;height:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:2px;"></div>
+          <span style="font-size:0.8rem;color:rgba(240,235,224,0.35);">Wet / off season</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-1">
+      <div style="margin-bottom:2.5rem;">
+        <p style="font-size:0.72rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Amazon Rainforest</p>
+        <div class="months-grid">
+          <div class="month-pill">Jan</div>
+          <div class="month-pill">Feb</div>
+          <div class="month-pill">Mar</div>
+          <div class="month-pill">Apr</div>
+          <div class="month-pill good">May</div>
+          <div class="month-pill good">Jun</div>
+          <div class="month-pill best">Jul</div>
+          <div class="month-pill best">Aug</div>
+          <div class="month-pill best">Sep</div>
+          <div class="month-pill good">Oct</div>
+          <div class="month-pill">Nov</div>
+          <div class="month-pill">Dec</div>
+        </div>
+      </div>
+      <div style="margin-bottom:2.5rem;">
+        <p style="font-size:0.72rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Pantanal</p>
+        <div class="months-grid">
+          <div class="month-pill">Jan</div>
+          <div class="month-pill">Feb</div>
+          <div class="month-pill good">Mar</div>
+          <div class="month-pill good">Apr</div>
+          <div class="month-pill best">May</div>
+          <div class="month-pill best">Jun</div>
+          <div class="month-pill best">Jul</div>
+          <div class="month-pill best">Aug</div>
+          <div class="month-pill best">Sep</div>
+          <div class="month-pill good">Oct</div>
+          <div class="month-pill">Nov</div>
+          <div class="month-pill">Dec</div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:0.72rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;">Lençóis Maranhenses</p>
+        <div class="months-grid">
+          <div class="month-pill">Jan</div>
+          <div class="month-pill">Feb</div>
+          <div class="month-pill">Mar</div>
+          <div class="month-pill">Apr</div>
+          <div class="month-pill good">May</div>
+          <div class="month-pill best">Jun</div>
+          <div class="month-pill best">Jul</div>
+          <div class="month-pill best">Aug</div>
+          <div class="month-pill good">Sep</div>
+          <div class="month-pill">Oct</div>
+          <div class="month-pill">Nov</div>
+          <div class="month-pill">Dec</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="ambient" style="width:600px;height:600px;background:radial-gradient(ellipse,rgba(15,70,35,0.18),transparent);top:20%;left:50%;transform:translateX(-50%);"></div>
+  <h2 class="cta-title reveal">
+    Begin your<br><em>journey</em>
+  </h2>
+  <p class="cta-sub reveal reveal-delay-1">Every river bend hides a story. Every canopy shelters a wonder. Brasil is waiting — and it will rearrange your sense of what the world can be.</p>
+  <div class="cta-buttons reveal reveal-delay-2">
+    <a href="#destinations" class="btn-primary">Explore Destinations</a>
+    <a href="#experiences" class="btn-outline">Browse Experiences</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Brasil Selvagem &nbsp;·&nbsp; A premium travel guide &nbsp;·&nbsp; © 2026</p>
+</footer>
+
+<script>
+  // ─── CURSOR ───
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .dest-card, .exp-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // ─── NAV SCROLL ───
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ─── PARALLAX FOREST ───
+  const forestBack = document.getElementById('forest-back');
+  const forestMid = document.getElementById('forest-mid');
+  const forestFore = document.getElementById('forest-fore');
+
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY;
+    if (s < window.innerHeight) {
+      forestBack.style.transform = `translateY(${s * 0.15}px)`;
+      forestMid.style.transform = `translateY(${s * 0.08}px)`;
+      forestFore.style.transform = `translateY(${s * 0.03}px)`;
+    }
+  });
+
+  // ─── SCROLL REVEAL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ─── FIREFLIES ───
+  const ff = document.getElementById('fireflies');
+  for (let i = 0; i < 22; i++) {
+    const f = document.createElement('div');
+    f.className = 'firefly';
+    const x = Math.random() * 100;
+    const y = 20 + Math.random() * 70;
+    const dur = 4 + Math.random() * 8;
+    const del = Math.random() * 10;
+    const dx = (Math.random() - 0.5) * 120;
+    const dy = (Math.random() - 0.5) * 80;
+    f.style.cssText = `left:${x}%;top:${y}%;--dx:${dx}px;--dy:${dy}px;animation-duration:${dur}s;animation-delay:${del}s;`;
+    ff.appendChild(f);
+  }
+
+  // ─── SMOOTH SCROLL NAV ───
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
